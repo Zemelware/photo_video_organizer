@@ -1,5 +1,7 @@
 """
-This program will automatically organize a library of photos and videos into year and month folders using metadata.
+Author: Ethan Zemelman
+Date: 2022/06/29
+Purpose: This program will automatically organize a library of photos and videos into year and month folders using metadata attached to the files.
 """
 
 import datetime

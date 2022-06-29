@@ -23,24 +23,32 @@ def get_video_date(vid_dir):
 
 
 directory = r'./photos'
-for i, filename in enumerate(os.listdir(directory)):
+for filename in os.listdir(directory):
     date_str = ''
     invalid_file = False
+    filepath = os.path.join(directory, filename)
 
     if filename.endswith('.jpg') or filename.endswith('.jpeg') or filename.endswith('.png'):
         # Image files
-        date_str = get_img_date(os.path.join(directory, filename))
+        date_str = get_img_date(filepath)
     elif filename.endswith('.mov') or filename.endswith('.mp4'):
         # Video files
-        date_str = get_video_date(os.path.join(directory, filename))
+        date_str = get_video_date(filepath)
     else:
         print(f"{filename} has an invalid file type.")
         invalid_file = True
 
     if not invalid_file:
+        # Remove the part of the date that shows the offset from UTC time (e.g., '-04:00')
         date_str = date_str.split('-', 1)[0]
         date = datetime.datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
-        print(date)
 
-# os.makedirs("./Photos/2022/2022-04", exist_ok=True)
+        year = date.strftime('%Y')
+        month = date.strftime('%m')
+
+        new_dir = f"./photos/{year}/{year}-{month}"
+
+        os.makedirs(new_dir, exist_ok=True)
+        os.replace(filepath, os.path.join(new_dir, filename))
+
 # TODO: add loading bar to display progress

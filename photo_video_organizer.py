@@ -41,14 +41,22 @@ for filename in os.listdir(directory):
     if not invalid_file:
         # Remove the part of the date that shows the offset from UTC time (e.g., '-04:00')
         date_str = date_str.split('-', 1)[0]
+        # Convert the date string into a date object
         date = datetime.datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
 
+        # The datetime library provides an easy way to get specific parts of a datetime object (in this case the year and month)
         year = date.strftime('%Y')
         month = date.strftime('%m')
 
+        # Variable for the directory format we are going to use
+        # Example of this format: 2022/2022-03
         new_dir = f"./photos/{year}/{year}-{month}"
 
+        # After looking at each file, create new directories with the photo/video's year and month
+        # E.g., if a photo was taken in December of 2018, the folders 2018/2018-12 will be created
+        # If the folder already exists (meaning another photo/video was taken in the same month/year) then no error will be thrown
         os.makedirs(new_dir, exist_ok=True)
+        # Move the file into its appropriate directory based on the date the photo/video was taken
         os.replace(filepath, os.path.join(new_dir, filename))
 
 # TODO: add loading bar to display progress

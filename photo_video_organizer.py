@@ -34,8 +34,11 @@ for filename in os.listdir(directory):
     elif filename.endswith('.mov') or filename.endswith('.mp4'):
         # Video files
         date_str = get_video_date(filepath)
+    elif os.path.isfile(filepath) and filename != '.DS_Store':
+        # Only give an error if the current item is not a folder & not a .DS_Store file
+        print(f"The file {filename} has an invalid file type.")
+        invalid_file = True
     else:
-        print(f"{filename} has an invalid file type.")
         invalid_file = True
 
     if not invalid_file:
@@ -51,12 +54,19 @@ for filename in os.listdir(directory):
         # Variable for the directory format we are going to use
         # Example of this format: 2022/2022-03
         new_dir = f"./photos/{year}/{year}-{month}"
+        new_filepath = os.path.join(new_dir, filename)
 
         # After looking at each file, create new directories with the photo/video's year and month
         # E.g., if a photo was taken in December of 2018, the folders 2018/2018-12 will be created
         # If the folder already exists (meaning another photo/video was taken in the same month/year) then no error will be thrown
         os.makedirs(new_dir, exist_ok=True)
+
         # Move the file into its appropriate directory based on the date the photo/video was taken
-        os.replace(filepath, os.path.join(new_dir, filename))
+        os.replace(filepath, new_filepath)
+
+        # Rename the file to the day/time it was taken so all photos/videos are organized by date taken
+        new_name = os.path.join(new_dir, date.strftime('%Y-%m-%d %H-%M'))
+        # In the 2nd argument of the function below, the extension is added to the name of the file
+        os.rename(new_filepath, new_name + os.path.splitext(filename)[1])
 
 # TODO: add loading bar to display progress

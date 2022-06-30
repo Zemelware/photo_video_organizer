@@ -82,5 +82,12 @@ for filename in tqdm(os.listdir(directory)):
 
         # Rename the file to the day/time it was taken so all photos/videos are organized by date taken
         new_name = os.path.join(new_dir, date.strftime('%Y-%m-%d %H-%M'))
-        # In the 2nd argument of the function below, the extension is added to the name of the file
-        os.rename(new_filepath, new_name + os.path.splitext(filename)[1])
+        file_ext = os.path.splitext(filename)[1]
+        # Handle duplicate file names
+        uniq = 1
+        while os.path.exists(new_name + file_ext):
+            # Add a number at the end of the file name to make it unique
+            new_name = os.path.join(new_dir, date.strftime(
+                '%Y-%m-%d %H-%M')) + f" ({uniq})"
+            uniq += 1
+        os.rename(new_filepath, new_name + file_ext)

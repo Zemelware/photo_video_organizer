@@ -13,16 +13,16 @@ import exifread
 import exiftool
 
 
-def get_img_date(img_dir):
-    with open(img_dir, 'rb') as image:
+def get_img_date(img_path):
+    with open(img_path, 'rb') as image:
         exif_tags = exifread.process_file(image)
         date_time_original = exif_tags['EXIF DateTimeOriginal']
         return str(date_time_original)
 
 
-def get_video_date(vid_dir):
+def get_video_date(vid_path):
     with exiftool.ExifTool() as et:
-        creation_date = et.get_tag('CreationDate', vid_dir)
+        creation_date = et.get_tag('CreationDate', vid_path)
         return creation_date
 
 
@@ -80,5 +80,3 @@ for filename in tqdm(os.listdir(directory)):
         new_name = os.path.join(new_dir, date.strftime('%Y-%m-%d %H-%M'))
         # In the 2nd argument of the function below, the extension is added to the name of the file
         os.rename(new_filepath, new_name + os.path.splitext(filename)[1])
-
-# TODO: add loading bar to display progress

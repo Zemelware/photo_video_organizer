@@ -6,6 +6,8 @@ Purpose: This program will automatically organize a library of photos and videos
 
 import datetime
 import os
+import sys
+from tqdm import tqdm
 
 import exifread
 import exiftool
@@ -24,8 +26,16 @@ def get_video_date(vid_dir):
         return creation_date
 
 
-directory = r'./photos'
-for filename in os.listdir(directory):
+if len(sys.argv) < 2:
+    print(
+        "\033[91mYou must pass in the path of the directory that contains your photos and videos.\033[0m")
+    exit()
+
+print("Organizing your library...")
+
+directory = sys.argv[1]
+
+for filename in tqdm(os.listdir(directory)):
     date_str = ''
     invalid_file = False
     filepath = os.path.join(directory, filename)
@@ -38,7 +48,7 @@ for filename in os.listdir(directory):
         date_str = get_video_date(filepath)
     elif os.path.isfile(filepath) and filename != '.DS_Store':
         # Only give an error if the current item is not a folder & not a .DS_Store file
-        print(f"The file {filename} has an invalid file type.")
+        print(f"\033[91mThe file {filename} has an invalid file type.\033[0m")
         invalid_file = True
     else:
         invalid_file = True

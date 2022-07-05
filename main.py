@@ -43,10 +43,20 @@ for filename in tqdm(os.listdir(directory)):
     if not filename.startswith('.'):  # ignore hidden files
         if filename.endswith('.jpg') or filename.endswith('.jpeg') or filename.endswith('.png'):
             # Image files
-            date_str = get_img_date(filepath)
+            try:
+                date_str = get_img_date(filepath, filename)
+            except:
+                print(
+                    f"\033[91mNo date information for {filename}\033[0m")
+                invalid_file = True
         elif filename.endswith('.mov') or filename.endswith('.mp4'):
             # Video files
-            date_str = get_video_date(filepath)
+            try:
+                date_str = get_video_date(filepath, filename)
+            except:
+                print(
+                    f"\033[91mNo date information for {filename}\033[0m")
+                invalid_file = True
         elif os.path.isfile(filepath) and filename != '.DS_Store':
             # Only give an error if the current item is not a folder & not a .DS_Store file
             print(

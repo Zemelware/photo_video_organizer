@@ -7,10 +7,10 @@ Purpose: This program will automatically organize a library of photos and videos
 import datetime
 import os
 import sys
-from tqdm import tqdm
 
 import exifread
 import exiftool
+from tqdm import tqdm
 
 
 def get_img_date(img_path):

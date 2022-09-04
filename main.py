@@ -23,6 +23,13 @@ def get_img_date(img_path):
 def get_video_date(vid_path):
     with exiftool.ExifTool() as et:
         creation_date = et.get_tag('CreationDate', vid_path)
+        if creation_date is None:
+            # Some videos don't have the CreationDate tag, so we use the DateTimeOriginal tag instead
+            creation_date = et.get_tag('DateTimeOriginal', vid_path)
+        if creation_date is None:
+            # If creation_date is None, it means the tag couldn't be found
+            raise Exception(
+                f'No CreationDate or DateTimeOriginal metadata tag associated with {vid_path}')
         return creation_date
 
 
@@ -46,16 +53,14 @@ for filename in tqdm(os.listdir(directory)):
             try:
                 date_str = get_img_date(filepath)
             except:
-                print(
-                    f"\033[91mNo date information for '{filename}'\033[0m")
+                print(f"\033[91mNo date information for '{filename}'\033[0m")
                 invalid_file = True
         elif filename.endswith('.mov') or filename.endswith('.MOV') or filename.endswith('.mp4') or filename.endswith('.MP4'):
             # Video files
             try:
                 date_str = get_video_date(filepath)
             except:
-                print(
-                    f"\033[91mNo date information for '{filename}'\033[0m")
+                print(f"\033[91mNo date information for '{filename}'\033[0m")
                 invalid_file = True
         elif os.path.isfile(filepath) and filename != '.DS_Store':
             # Only give an error if the current item is not a folder & not a .DS_Store file
@@ -70,6 +75,7 @@ for filename in tqdm(os.listdir(directory)):
     if not invalid_file:
         # Remove the part of the date that shows the offset from UTC time (e.g., '-04:00')
         date_str = date_str.split('-', 1)[0]
+        date_str = date_str.split('+', 1)[0]
         # Convert the date string into a date object
         date = datetime.datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
 

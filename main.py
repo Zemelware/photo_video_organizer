@@ -4,9 +4,10 @@ Date: 2022/06/29
 Purpose: This program will automatically organize a library of photos and videos into year and month folders using metadata attached to the files.
 """
 
-import datetime
+from datetime import datetime
 import os
 import sys
+import traceback
 
 import exifread
 import exiftool
@@ -42,6 +43,10 @@ print("Organizing your library...")
 
 directory = sys.argv[1]
 
+# Create/open an error log file in append mode to store any errors that occur
+error_file = open('Error.log', 'a')
+error_file.write(f'Error log for {datetime.now()}\n\n')
+
 for filename in tqdm(os.listdir(directory)):
     date_str = ''
     invalid_file = False
@@ -53,14 +58,22 @@ for filename in tqdm(os.listdir(directory)):
             try:
                 date_str = get_img_date(filepath)
             except:
-                print(f"\033[91mNo date information for '{filename}'\033[0m")
+                print(
+                    f"\033[91mNo date information for '{filename}'\033[0m")
+                error_file.write(f"No date information for '{filename}'\n")
+                error_file.write(traceback.format_exc() + '\n')
+
                 invalid_file = True
         elif filename.endswith('.mov') or filename.endswith('.MOV') or filename.endswith('.mp4') or filename.endswith('.MP4'):
             # Video files
             try:
                 date_str = get_video_date(filepath)
             except:
-                print(f"\033[91mNo date information for '{filename}'\033[0m")
+                print(
+                    f"\033[91mNo date information for '{filename}'\033[0m")
+                error_file.write(f"No date information for '{filename}'\n")
+                error_file.write(traceback.format_exc() + '\n')
+
                 invalid_file = True
         elif os.path.isfile(filepath) and filename != '.DS_Store':
             # Only give an error if the current item is not a folder & not a .DS_Store file
@@ -77,7 +90,7 @@ for filename in tqdm(os.listdir(directory)):
         date_str = date_str.split('-', 1)[0]
         date_str = date_str.split('+', 1)[0]
         # Convert the date string into a date object
-        date = datetime.datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
+        date = datetime.strptime(date_str, '%Y:%m:%d %H:%M:%S')
 
         # The datetime library provides an easy way to get specific parts of a datetime object (in this case the year and month)
         year = date.strftime('%Y')
@@ -107,3 +120,10 @@ for filename in tqdm(os.listdir(directory)):
                 '%Y-%m-%d %H-%M')) + f" ({uniq})"
             uniq += 1
         os.rename(new_filepath, new_name + file_ext)
+
+error_file.write(
+    "-------------------------------------------------------------------\n\n")
+error_file.close()
+
+print("\nFinished organizing your library!")
+print("Any errors that occurred have been logged in the Error.log file (stored in your current directory).")

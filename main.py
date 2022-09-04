@@ -41,7 +41,7 @@ for filename in tqdm(os.listdir(directory)):
     filepath = os.path.join(directory, filename)
 
     if not filename.startswith('.'):  # ignore hidden files
-        if filename.endswith('.jpg') or filename.endswith('.JPG') or filename.endswith('.jpeg') or filename.endswith('.JPEG') or filename.endswith('.png') or filename.endswith('.PNG'):
+        if filename.endswith('.jpg') or filename.endswith('.JPG') or filename.endswith('.jpeg') or filename.endswith('.JPEG') or filename.endswith('.png') or filename.endswith('.PNG') or filename.endswith('.heic') or filename.endswith('.HEIC'):
             # Image files
             try:
                 date_str = get_img_date(filepath)

@@ -17,21 +17,21 @@ from tqdm import tqdm
 def get_img_date(img_path):
     with open(img_path, 'rb') as image:
         exif_tags = exifread.process_file(image)
-        date_time_original = exif_tags['EXIF DateTimeOriginal']
-        return str(date_time_original)
+        date_taken = exif_tags['EXIF DateTimeOriginal']
+        return str(date_taken)
 
 
 def get_video_date(vid_path):
     with exiftool.ExifTool() as et:
-        creation_date = et.get_tag('CreationDate', vid_path)
-        if creation_date is None:
+        date_taken = et.get_tag('CreationDate', vid_path)
+        if date_taken is None:
             # Some videos don't have the CreationDate tag, so we use the DateTimeOriginal tag instead
-            creation_date = et.get_tag('DateTimeOriginal', vid_path)
-        if creation_date is None:
+            date_taken = et.get_tag('DateTimeOriginal', vid_path)
+        if date_taken is None:
             # If creation_date is None, it means the tag couldn't be found
             raise Exception(
                 f'No CreationDate or DateTimeOriginal metadata tag associated with {vid_path}')
-        return creation_date
+        return date_taken
 
 
 if len(sys.argv) < 2:
